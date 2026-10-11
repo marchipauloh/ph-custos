@@ -1,0 +1,164 @@
+    :root {
+      --bg-dark: #0f1117;
+      --card-bg: #181b26;
+      --orange-primary: #FF7A00;
+      --orange-hover: #e06c00;
+      --orange-dark: #3a1c00;
+    }
+    body {
+      background-color: var(--bg-dark);
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    input, select {
+      background-color: #121622 !important;
+      border-color: #2a3142 !important;
+      color: #f8fafc !important;
+    }
+    input, select {
+      color-scheme: dark;
+    }
+    input:focus, select:focus {
+      border-color: #FF7A00 !important;
+      /* V20: sem contorno o teclado some. Mantemos um foco visível. */
+      outline: 2px solid #FF7A00;
+      outline-offset: 1px;
+    }
+    /* Quem navega por teclado precisa enxergar onde está */
+    button:focus-visible, a:focus-visible, [onclick]:focus-visible {
+      outline: 2px solid #FF7A00;
+      outline-offset: 2px;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #2a3142;
+      border-radius: 3px;
+    }
+
+    /* IMPRESSÃO / PDF DA PROPOSTA EM A4
+       Com a proposta aberta, só ela vai para o papel, inteira (sem a área de
+       rolagem do modal). As seções não são cortadas no meio entre páginas e
+       o rodapé de cada página (nº da proposta e "Página X de Y") é montado
+       no JavaScript, em abrirDetalhes(). */
+    @media print {
+      @page { size: A4; margin: 12mm 12mm 15mm 12mm; }
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      html, body {
+        background: #ffffff !important;
+      }
+      body {
+        display: block !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+
+      /* V28: CORRECAO DO PDF.
+         O modal de detalhes (#modal-detalhes) nao e filho direto do <body>:
+         ele fica dentro do wrapper <div class="w-full max-w-5xl">.
+         A regra antiga usava "body.proposta-aberta > *:not(#modal-detalhes)",
+         que nunca casou com nada - por isso a tela inteira (menu, campos,
+         tabelas) saia na impressao em vez de apenas a proposta.
+
+         A regra correta esconde tudo que esta dentro do wrapper, menos a
+         "trilha" de ancestrais que leva ate o modal. Como nao podemos
+         selecionar ancestrais em CSS, a solucao e inverter o raciocinio:
+         escondemos o wrapper e devolvemos o modal com position:fixed,
+         tirando-o do fluxo. O print entao pagina apenas o modal.
+         Isso tambem evita depender de :has(), que so funciona em
+         navegadores recentes. */
+      body.proposta-aberta > .w-full.max-w-5xl {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: none !important;
+      }
+      body.proposta-aberta > .w-full.max-w-5xl > :not(#modal-detalhes) {
+        display: none !important;
+      }
+      body.proposta-aberta #modal-detalhes {
+        display: block !important;
+        position: static !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+      }
+      body.proposta-aberta #modal-detalhes > div {
+        display: block !important;
+        max-width: 100% !important;
+        background: #ffffff !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+      #modal-conteudo {
+        display: block !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        color: #0f172a !important;
+      }
+      .proposta-doc {
+        display: block !important;
+      }
+      .proposta-doc > * + * {
+        margin-top: 4mm;
+      }
+      .proposta-doc .overflow-x-auto {
+        overflow: visible !important;
+      }
+      .proposta-doc tr, .prop-sec {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .prop-titulo {
+        break-after: avoid;
+        page-break-after: avoid;
+      }
+      .proposta-doc thead {
+        display: table-header-group;
+      }
+      .print-2col {
+        grid-template-columns: 1fr 1fr !important;
+      }
+      .print-card {
+        border: 1px solid #e2e8f0 !important;
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+      }
+      .print-group {
+        background-color: #eef2f7 !important;
+      }
+      .print-total {
+        background-color: #fff3e6 !important;
+        border-top: 2px solid #FF7A00 !important;
+      }
+      .print-text-dark {
+        color: #0f172a !important;
+      }
+      .print-text-muted {
+        color: #475569 !important;
+      }
+      .print-border-orange {
+        border-color: #FF7A00 !important;
+      }
+    }
+    }
+  
+
+    /* V21: cada aba virou uma pagina. O item do menu da pagina atual
+       recebe este visual, marcado pelo script do rodape. */
+    .menu-btn.ativo {
+      background-color: #FF7A00;
+      color: #fff;
+    }
