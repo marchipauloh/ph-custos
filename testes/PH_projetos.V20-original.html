@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PH Custos - Gestor de Obras & Financeiro Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #0f1117;
+      --card-bg: #181b26;
+      --orange-primary: #FF7A00;
+      --orange-hover: #e06c00;
+      --orange-dark: #3a1c00;
+    }
+    body {
+      background-color: var(--bg-dark);
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    input, select {
+      background-color: #121622 !important;
+      border-color: #2a3142 !important;
+      color: #f8fafc !important;
+    }
+    input, select {
+      color-scheme: dark;
+    }
+    input:focus, select:focus {
+      border-color: #FF7A00 !important;
+      /* V20: sem contorno o teclado some. Mantemos um foco visível. */
+      outline: 2px solid #FF7A00;
+      outline-offset: 1px;
+    }
+    /* Quem navega por teclado precisa enxergar onde está */
+    button:focus-visible, a:focus-visible, [onclick]:focus-visible {
+      outline: 2px solid #FF7A00;
+      outline-offset: 2px;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #2a3142;
+      border-radius: 3px;
+    }
+
+    /* IMPRESSÃO / PDF DA PROPOSTA EM A4
+       Com a proposta aberta, só ela vai para o papel, inteira (sem a área de
+       rolagem do modal). As seções não são cortadas no meio entre páginas e
+       o rodapé de cada página (nº da proposta e "Página X de Y") é montado
+       no JavaScript, em abrirDetalhes(). */
+    @media print {
+      @page { size: A4; margin: 12mm 12mm 15mm 12mm; }
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      html, body {
+        background: #ffffff !important;
+      }
+      body {
+        display: block !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      body.proposta-aberta > *:not(#modal-detalhes) {
+        display: none !important;
+      }
+      body.proposta-aberta #modal-detalhes {
+        display: block !important;
+        position: static !important;
+        background: #ffffff !important;
+        padding: 0 !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+      }
+      body.proposta-aberta #modal-detalhes > div {
+        display: block !important;
+        max-width: 100% !important;
+        background: #ffffff !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+      #modal-conteudo {
+        display: block !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        color: #0f172a !important;
+      }
+      .proposta-doc {
+        display: block !important;
+      }
+      .proposta-doc > * + * {
+        margin-top: 4mm;
+      }
+      .proposta-doc .overflow-x-auto {
+        overflow: visible !important;
+      }
+      .proposta-doc tr, .prop-sec {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .prop-titulo {
+        break-after: avoid;
+        page-break-after: avoid;
+      }
+      .proposta-doc thead {
+        display: table-header-group;
+      }
+      .print-2col {
+        grid-template-columns: 1fr 1fr !important;
+      }
+      .print-card {
+        border: 1px solid #e2e8f0 !important;
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+      }
+      .print-group {
+        background-color: #eef2f7 !important;
+      }
+      .print-total {
+        background-color: #fff3e6 !important;
+        border-top: 2px solid #FF7A00 !important;
+      }
+      .print-text-dark {
+        color: #0f172a !important;
+      }
+      .print-text-muted {
+        color: #475569 !important;
+      }
+      .print-border-orange {
+        border-color: #FF7A00 !important;
+      }
+    }
+  </style>
+</head>
+<body class="p-3 sm:p-6 flex justify-center items-start">
+
+  <div class="w-full max-w-5xl flex flex-col gap-4">
+    
+    <!-- HEADER COM LOGO PH LIGHTING EM LARANJA -->
+    <header class="flex items-center justify-between border-b border-orange-500/20 pb-3 no-print">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl overflow-hidden border border-orange-500/40 flex items-center justify-center bg-[#121212] shadow-lg shadow-orange-500/10">
+          <svg viewBox="0 0 200 200" class="w-full h-full p-1">
+            <rect width="200" height="200" fill="#121212" />
+            <rect x="25" y="25" width="150" height="110" rx="20" fill="#FF7A00" />
+            <line x1="55" y1="40" x2="55" y2="120" stroke="#121212" stroke-width="8" stroke-linecap="round" />
+            <circle cx="55" cy="70" r="10" fill="#121212" />
+            <line x1="85" y1="40" x2="85" y2="120" stroke="#121212" stroke-width="8" stroke-linecap="round" />
+            <circle cx="85" cy="95" r="10" fill="#121212" />
+            <line x1="115" y1="40" x2="115" y2="120" stroke="#121212" stroke-width="8" stroke-linecap="round" />
+            <circle cx="115" cy="55" r="10" fill="#121212" />
+            <line x1="145" y1="40" x2="145" y2="120" stroke="#121212" stroke-width="8" stroke-linecap="round" />
+            <circle cx="145" cy="105" r="10" fill="#121212" />
+            <text x="30" y="165" font-family="sans-serif" font-weight="900" font-size="32" fill="#FFFFFF">ph</text>
+            <text x="65" y="165" font-family="sans-serif" font-weight="300" font-size="32" fill="#FFFFFF">lighting</text>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-black text-white">PH Custos <span class="text-[#FF7A00]">Projetos</span></h1>
+          <p class="text-xs text-slate-400">Gestão de Insumos, Executado por Obra e Lucratividade</p>
+        </div>
+      </div>
+      <span class="text-xs bg-orange-950/60 text-[#FF7A00] px-3 py-1 rounded-full font-bold border border-orange-500/30">PH Lighting System</span>
+    </header>
+
+    <!-- NAVEGAÇÃO DE ABAS COM TEMA LARANJA -->
+    <nav class="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1 bg-[#181b26] border border-slate-800 rounded-xl no-print">
+      <button onclick="switchTab('orcamento')" id="btn-orcamento" class="tab-btn py-2.5 px-2 text-center rounded-lg text-xs font-bold transition-all bg-[#FF7A00] text-white">
+        <i class="fa-solid fa-calculator"></i> 1. Proposta & Status
+      </button>
+      <button onclick="switchTab('materiais')" id="btn-materiais" class="tab-btn py-2.5 px-2 text-center rounded-lg text-xs font-bold transition-all text-slate-400 hover:bg-slate-800">
+        <i class="fa-solid fa-boxes-packing"></i> 2. Lista Materiais
+      </button>
+      <button onclick="switchTab('equipe')" id="btn-equipe" class="tab-btn py-2.5 px-2 text-center rounded-lg text-xs font-bold transition-all text-slate-400 hover:bg-slate-800">
+        <i class="fa-solid fa-users-gear"></i> 3. Equipe de Campo
+      </button>
+      <button onclick="switchTab('financeiro')" id="btn-financeiro" class="tab-btn py-2.5 px-2 text-center rounded-lg text-xs font-bold transition-all text-slate-400 hover:bg-slate-800">
+        <i class="fa-solid fa-chart-line"></i> 4. Painel Financeiro
+      </button>
+    </nav>
+
+    <!-- ABA 1: PROPOSTA & CONFIGURAÇÃO -->
+    <section id="tab-orcamento" class="tab-section flex flex-col gap-4">
+
+      <!-- V17: aparece quando uma proposta salva foi reaberta para edição -->
+      <div id="banner-edicao" class="hidden flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-orange-950/50 border border-[#FF7A00] rounded-xl p-3 text-xs">
+        <div>
+          <strong id="banner-edicao-texto" class="text-[#FF7A00] block">Editando proposta</strong>
+          <span class="text-slate-400">Status, gastos lançados e recebimentos da obra são mantidos ao salvar.</span>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <button onclick="salvarOrcamento(true)" class="py-1.5 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold"><i class="fa-solid fa-copy"></i> Salvar como nova</button>
+          <button onclick="sairModoEdicao()" class="py-1.5 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold"><i class="fa-solid fa-xmark"></i> Sair da edição</button>
+        </div>
+      </div>
+
+      <div id="bloco-status-inicial" class="bg-gradient-to-r from-slate-900 via-[#181b26] to-orange-950/30 border border-orange-500/30 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-lg">
+        <div>
+          <span class="text-xs text-[#FF7A00] font-bold uppercase tracking-wider block">Status Inicial do Orçamento</span>
+          <p class="text-xs text-slate-400">Escolha o estado inicial antes de gravar a proposta</p>
+        </div>
+        <div class="w-full sm:w-auto">
+          <select id="status-projeto" class="w-full sm:w-auto p-2.5 rounded-lg border text-xs font-bold bg-slate-900 text-white border-orange-500">
+            <option value="A Confirmar">⏳ A Confirmar (Em Análise)</option>
+            <option value="Agendado">📅 Agendado / Aceito pelo Cliente</option>
+            <option value="Recebido">✅ Concluído & Pago (Caixa)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+        <h2 class="text-xs font-bold uppercase text-[#FF7A00] border-b border-slate-800 pb-2">
+          <i class="fa-solid fa-folder-open"></i> Dados do Projeto
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Cliente / Projeto</label>
+            <input type="text" id="proj-nome" value="STARLANE BAR" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Dias de Trabalho</label>
+            <input type="number" id="proj-dias" value="5" min="1" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Valor Fixo Projeto (R$)</label>
+            <input type="number" id="proj-valor-fixo" value="2000" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Contato do Responsável</label>
+            <input type="text" id="cli-contato" placeholder="Nome de quem aprova" class="w-full p-2 rounded-lg border">
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">WhatsApp do Cliente</label>
+            <input type="tel" id="cli-fone" placeholder="(19) 99999-9999" class="w-full p-2 rounded-lg border">
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Local da Instalação</label>
+            <input type="text" id="cli-local" value="Holambra - SP" placeholder="Endereço / cidade" class="w-full p-2 rounded-lg border">
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+        <h2 class="text-xs font-bold uppercase text-orange-400 border-b border-slate-800 pb-2">
+          <i class="fa-solid fa-users-gear"></i> Mão de Obra Geral
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Engenheiro (Qtd | R$)</label>
+            <div class="flex gap-1">
+              <input type="number" id="eng-q" value="1" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+              <input type="number" id="eng-v" value="650" oninput="agendarCalcular()" class="w-2/3 p-2 rounded-lg border">
+            </div>
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Técnico (Qtd | R$)</label>
+            <div class="flex gap-1">
+              <input type="number" id="tec-q" value="1" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+              <input type="number" id="tec-v" value="450" oninput="agendarCalcular()" class="w-2/3 p-2 rounded-lg border">
+            </div>
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Auxiliar (Qtd | R$)</label>
+            <div class="flex gap-1">
+              <input type="number" id="aux-q" value="1" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+              <input type="number" id="aux-v" value="250" oninput="agendarCalcular()" class="w-2/3 p-2 rounded-lg border">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+        <h2 class="text-xs font-bold uppercase text-[#FF7A00] border-b border-slate-800 pb-2">
+          <i class="fa-solid fa-truck-fast"></i> Logística & Hotel
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Alimentação (Ref/Dia | R$ Ref)</label>
+            <div class="flex gap-1">
+              <input type="number" id="alim-q" value="2" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+              <input type="number" id="alim-v" value="50" oninput="agendarCalcular()" class="w-2/3 p-2 rounded-lg border">
+            </div>
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Carro (Km total | Pedágio R$)</label>
+            <div class="flex gap-1">
+              <input type="number" id="carro-km" value="240" oninput="agendarCalcular()" class="w-1/2 p-2 rounded-lg border">
+              <input type="number" id="carro-ped" value="80" oninput="agendarCalcular()" class="w-1/2 p-2 rounded-lg border">
+            </div>
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Hotel (Dias | Pessoas | R$)</label>
+            <div class="flex gap-1">
+              <input type="number" id="hotel-dias" value="3" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+              <input type="number" id="hotel-pess" value="4" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+              <input type="number" id="hotel-v" value="450" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- V17: CRONOGRAMA -->
+      <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+        <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-800 pb-2">
+          <h2 class="text-xs font-bold uppercase text-[#FF7A00]"><i class="fa-solid fa-calendar-days"></i> Cronograma da Obra</h2>
+          <div class="flex gap-1.5">
+            <button onclick="cronoRegerar('orc')" title="Refaz as etapas sugeridas a partir dos Dias de Trabalho" class="py-1 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-bold"><i class="fa-solid fa-rotate"></i> Sugerir pelos dias</button>
+            <button onclick="cronoAdd('orc')" class="py-1 px-2.5 bg-[#FF7A00] hover:bg-orange-600 text-white rounded text-[11px] font-bold"><i class="fa-solid fa-plus"></i> Etapa</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Início Previsto (opcional)</label>
+            <input type="date" id="crono-inicio-orc" oninput="cronoCfg('orc', 'inicio', this.value)" class="w-full p-2 rounded-lg border">
+          </div>
+          <label class="sm:col-span-2 flex items-center gap-2 text-slate-300 sm:pt-5 cursor-pointer">
+            <input type="checkbox" id="crono-fds-orc" onchange="cronoCfg('orc', 'fimDeSemana', this.checked)" class="w-4 h-4 shrink-0 cursor-pointer">
+            Contar sábado e domingo como dias de obra
+          </label>
+        </div>
+        <div id="crono-lista-orc" class="flex flex-col gap-1.5 text-xs"></div>
+        <p id="crono-aviso-orc" class="text-[11px] text-slate-400"></p>
+      </div>
+
+      <!-- V17: CONDIÇÕES DE PAGAMENTO -->
+      <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+        <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-800 pb-2">
+          <h2 class="text-xs font-bold uppercase text-[#FF7A00]"><i class="fa-solid fa-hand-holding-dollar"></i> Condições de Pagamento</h2>
+          <button onclick="parcAdd('orc')" class="py-1 px-2.5 bg-[#FF7A00] hover:bg-orange-600 text-white rounded text-[11px] font-bold"><i class="fa-solid fa-plus"></i> Parcela</button>
+        </div>
+        <div id="parc-lista-orc" class="flex flex-col gap-1.5 text-xs"></div>
+        <p id="parc-aviso-orc" class="text-[11px] text-slate-400"></p>
+      </div>
+
+      <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+        <h2 class="text-xs font-bold uppercase text-[#FF7A00] border-b border-slate-800 pb-2 flex items-center justify-between">
+          <span><i class="fa-solid fa-coins"></i> Detalhamento dos Custos Base</span>
+          <span class="text-[10px] text-slate-400 font-normal">Calculado Automaticamente</span>
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block mb-1">👷 Mão de Obra:</span>
+            <strong id="card-cost-mo" class="text-orange-400 text-sm">R$ 0,00</strong>
+          </div>
+          <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block mb-1">📦 Materiais (Aba 2):</span>
+            <strong id="card-cost-mat" class="text-[#FF7A00] text-sm">R$ 0,00</strong>
+          </div>
+          <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block mb-1">🚚 Logística & Viagem:</span>
+            <strong id="card-cost-log" class="text-amber-400 text-sm">R$ 0,00</strong>
+          </div>
+          <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+            <span class="text-slate-400 block mb-1">🎯 Custo Base Total:</span>
+            <strong id="card-cost-total" class="text-rose-400 text-sm">R$ 0,00</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-orange-950/40 via-[#181b26] to-slate-900 border border-orange-500/30 rounded-xl p-4 flex flex-col gap-3 shadow-xl">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Reserva Técnica (%)</label>
+            <input type="number" id="taxa-reserva" value="10" step="0.1" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Margem / Lucro (%)</label>
+            <input type="number" id="taxa-margem" value="10" step="0.1" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Imposto NF (%)</label>
+            <input type="number" id="taxa-imposto" value="15" step="0.01" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+          </div>
+        </div>
+
+        <div class="my-1 border-t border-dashed border-slate-700"></div>
+
+        <!-- V18: clique na opção que o cliente escolheu (vale para parcelas e financeiro) -->
+        <p class="text-[11px] text-slate-400">Clique na opção que o cliente vai fechar:</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm font-bold">
+          <button type="button" id="box-opcao-sem" onclick="selecionarOpcao('sem')" class="text-left p-3 rounded-xl border-2 transition-all">
+            <span class="text-xs block font-normal"><span id="tag-opcao-sem"></span> Opção A (Sem Nota Fiscal):</span>
+            <span id="res-sem-nota" class="text-xl text-[#FF7A00] font-black">R$ 0,00</span>
+          </button>
+          <button type="button" id="box-opcao-com" onclick="selecionarOpcao('com')" class="text-left p-3 rounded-xl border-2 transition-all">
+            <span class="text-xs block font-normal"><span id="tag-opcao-com"></span> Opção B (Com Nota Fiscal):</span>
+            <span id="res-com-nota" class="text-xl text-[#FF7A00] font-black">R$ 0,00</span>
+          </button>
+        </div>
+        <p id="nota-fator" class="text-[10px] text-slate-500 font-normal"></p>
+
+        <div class="flex gap-2">
+          <button onclick="salvarOrcamento()" class="flex-1 py-3 px-4 rounded-xl bg-[#FF7A00] hover:bg-orange-600 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-orange-500/10">
+            <i class="fa-solid fa-floppy-disk"></i> <span id="lbl-salvar-orc">Salvar no Financeiro</span>
+          </button>
+          <button onclick="enviarWhatsAppOrcamento()" title="Copia o resumo para você colar no WhatsApp Web" class="flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg">
+            <i class="fa-brands fa-whatsapp text-base"></i> Copiar p/ WhatsApp
+          </button>
+        </div>
+      </div>
+
+      <!-- V17: DADOS DA PH QUE APARECEM NA PROPOSTA -->
+      <details class="bg-[#181b26] border border-slate-800 rounded-xl p-4 shadow-lg text-xs">
+        <summary class="font-bold uppercase text-slate-300 cursor-pointer"><i class="fa-solid fa-building"></i> Dados da PH na proposta (CNPJ, contato, validade)</summary>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">CNPJ</label>
+            <input type="text" id="emp-cnpj" oninput="salvarEmpresa()" placeholder="00.000.000/0001-00" class="w-full p-2 rounded-lg border">
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Contato (telefone / e-mail)</label>
+            <input type="text" id="emp-contato" oninput="salvarEmpresa()" placeholder="(19) 99999-9999 • contato@..." class="w-full p-2 rounded-lg border">
+          </div>
+          <div>
+            <label class="text-slate-400 font-semibold block mb-1">Validade da Proposta (dias)</label>
+            <input type="number" id="emp-validade" value="15" min="1" oninput="salvarEmpresa()" class="w-full p-2 rounded-lg border">
+          </div>
+        </div>
+        <p class="text-[10px] text-slate-500 mt-2">Fica salvo neste navegador e vale para todas as propostas.</p>
+      </details>
+    </section>
+
+    <!-- ABA 2: LISTA MATERIAL -->
+    <section id="tab-materiais" class="tab-section hidden flex-col gap-4">
+      <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+          <h2 class="text-xs font-bold uppercase text-[#FF7A00] flex items-center gap-2">
+            <i class="fa-solid fa-boxes-packing"></i> Tabela Completa de Insumos & Materiais
+          </h2>
+          <button onclick="adicionarMaterial()" class="py-1 px-3 bg-[#FF7A00] hover:bg-orange-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-plus"></i> Adicionar Item
+          </button>
+        </div>
+
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-900 text-[#FF7A00] border-b border-slate-800">
+                <th class="p-2">Produto</th>
+                <th class="p-2">Marca / Obs</th>
+                <th class="p-2 text-center">Qtde</th>
+                <th class="p-2 text-center">Valor Unit (R$)</th>
+                <th class="p-2 text-right">Total (R$)</th>
+                <th class="p-2 text-center">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-mat-body" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+
+        <div class="flex justify-between items-center p-3 bg-slate-900 rounded-lg border border-slate-800 font-bold text-xs mt-2">
+          <span>TOTAL ESTIMADO MATERIAIS:</span>
+          <span id="mat-total-geral" class="text-[#FF7A00] text-sm">R$ 0,00</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: EQUIPE DE TÉCNICOS ENVOLVIDOS -->
+    <section id="tab-equipe" class="tab-section hidden flex-col gap-4">
+      <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+          <h2 class="text-xs font-bold uppercase text-orange-400 flex items-center gap-2">
+            <i class="fa-solid fa-user-gear"></i> Gestão da Equipe & Diárias de Campo
+          </h2>
+          <button onclick="adicionarTecnico()" class="py-1 px-3 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-user-plus"></i> Adicionar Integrante
+          </button>
+        </div>
+
+        <div id="lista-tecnicos" class="flex flex-col gap-2"></div>
+
+        <div class="flex justify-between items-center p-2.5 bg-slate-900 rounded-lg border border-slate-800 text-xs font-bold mt-1">
+          <span>Custo Total Equipe Técnica:</span>
+          <span id="total-custo-equipe" class="text-orange-400 text-sm">R$ 0,00</span>
+        </div>
+        <p id="equipe-comparativo" class="text-[11px] text-slate-400"></p>
+      </div>
+    </section>
+
+    <!-- ABA 4: PAINEL FINANCEIRO CORRIGIDO -->
+    <section id="tab-financeiro" class="tab-section hidden flex-col gap-4">
+      
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+        <div class="bg-[#181b26] border border-slate-800/80 rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-md">
+          <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase mb-1">✅ PAGO / RECEBIDO</span>
+          <strong id="fin-recebido" class="text-lg sm:text-xl font-black text-emerald-500">R$ 0,00</strong>
+        </div>
+        <div class="bg-[#181b26] border border-slate-800/80 rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-md">
+          <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase mb-1">⏳ A CONFIRMAR</span>
+          <strong id="fin-confirmar" class="text-lg sm:text-xl font-black text-amber-500">R$ 0,00</strong>
+        </div>
+        <div class="bg-[#181b26] border border-orange-500/40 rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-md bg-gradient-to-b from-orange-950/20 to-[#181b26]">
+          <span class="text-[11px] font-bold tracking-wider text-orange-400 uppercase mb-1">💎 LUCRO EFETIVO (OBRAS PAGAS)</span>
+          <strong id="fin-lucro-real" class="text-lg sm:text-xl font-black text-[#FF7A00]">R$ 0,00</strong>
+          <span id="fin-lucro-previsto" class="text-[10px] text-slate-400 mt-1">Previsto em aberto: R$ 0,00</span>
+        </div>
+        <div class="bg-[#181b26] border border-slate-800/80 rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-md">
+          <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase mb-1">PROJETOS TOTAIS</span>
+          <strong id="fin-total-projetos" class="text-lg sm:text-xl font-black text-slate-100">0</strong>
+        </div>
+      </div>
+
+      <div class="bg-[#181b26] border border-slate-800/80 rounded-xl p-4 flex flex-col gap-4 shadow-lg">
+        <h2 class="text-xs font-bold uppercase text-orange-400 flex items-center gap-2">
+          <i class="fa-solid fa-chart-pie"></i> Distribuição Macro do Caixa
+        </h2>
+        <div class="w-full h-4 bg-slate-900 rounded-full overflow-hidden flex border border-slate-800 p-0.5">
+          <div id="bar-recebido" class="h-full bg-emerald-500 transition-all duration-500" style="width: 0%" title="Pago/Recebido"></div>
+          <div id="bar-confirmar" class="h-full bg-amber-500 transition-all duration-500" style="width: 0%" title="A Confirmar"></div>
+          <div id="bar-agendado" class="h-full bg-orange-500 transition-all duration-500" style="width: 0%" title="A receber"></div>
+        </div>
+        <div class="flex flex-wrap gap-x-5 gap-y-1 text-[11px] text-slate-400">
+          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Recebido: <strong id="leg-recebido" class="text-slate-200">R$ 0,00</strong></span>
+          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500"></span> A confirmar: <strong id="leg-confirmar" class="text-slate-200">R$ 0,00</strong></span>
+          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-orange-500"></span> A receber (obras fechadas): <strong id="fin-agendado" class="text-slate-200">R$ 0,00</strong></span>
+        </div>
+      </div>
+
+      <!-- LISTA DE PROPOSTAS REGISTRADAS -->
+      <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+        <div class="border-b border-slate-800 pb-2 flex flex-wrap justify-between items-center gap-2">
+          <h2 class="text-xs font-bold uppercase text-[#FF7A00]"><i class="fa-solid fa-list-check"></i> Gestão de Propostas (Pagamentos, Executado & PDF)</h2>
+          <div class="flex gap-1.5">
+            <button onclick="exportarExcel()" title="Planilha de controle para abrir e editar no Excel (não volta para o sistema)" class="py-1 px-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[11px] font-bold"><i class="fa-solid fa-file-excel"></i> Excel (.xlsx)</button>
+            <button onclick="exportarBackup()" title="Backup completo: é este arquivo que o sistema consegue abrir de novo" class="py-1 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-bold"><i class="fa-solid fa-download"></i> Backup (.json)</button>
+            <button onclick="document.getElementById('arquivo-backup').click()" title="Carrega um Backup (.json) exportado antes" class="py-1 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-bold"><i class="fa-solid fa-upload"></i> Importar backup</button>
+            <input type="file" id="arquivo-backup" accept=".json,application/json" onchange="importarBackupArquivo(this)" class="hidden">
+          </div>
+        </div>
+        <div id="lista-projetos" class="flex flex-col gap-2.5 text-xs"></div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- MODAL EDITAR EXECUTADO DA OBRA COM ATUALIZAÇÃO REATIVO DO LUCRO -->
+  <div id="modal-editar" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="modal-edit-titulo">
+    <div class="bg-[#181b26] border border-slate-700 rounded-2xl w-full max-w-4xl p-5 flex flex-col gap-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 id="modal-edit-titulo" class="text-base font-bold text-[#FF7A00] flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square"></i> Ajustes da Obra: Controle de Compras & Equipe
+        </h3>
+        <button onclick="fecharModalEdit()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="flex flex-col gap-3 text-xs max-h-[65vh] overflow-y-auto custom-scroll pr-1">
+        
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 bg-slate-900 rounded-xl border border-slate-800">
+          <div>
+            <label class="text-slate-400 block mb-1">Valor Orçado c/ NF (R$)</label>
+            <input type="number" id="edit-val-orcado" step="0.01" min="0" oninput="recalcularEdit()" class="w-full p-2 rounded-lg border font-bold text-[#FF7A00]">
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Imposto NF (%)</label>
+            <input type="number" id="edit-taxa-imposto" step="0.01" min="0" oninput="recalcularEdit()" class="w-full p-2 rounded-lg border font-bold text-slate-300">
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Cliente Fechou</label>
+            <select id="edit-modalidade" onchange="recalcularEdit()" class="w-full p-2 rounded-lg border font-bold">
+              <option value="com">Com NF (Opção B)</option>
+              <option value="sem">Sem NF (Opção A)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Cliente Paga (R$)</label>
+            <input type="number" id="edit-val-cliente" readonly class="w-full p-2 rounded-lg border font-bold text-slate-300">
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Total Gastos Executados (R$)</label>
+            <input type="number" id="edit-val-gastos" readonly class="w-full p-2 rounded-lg border font-bold text-slate-300">
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">Resultado (Lucro / Prejuízo)</label>
+            <div id="edit-res-lucro" class="p-2 rounded-lg border font-black text-center text-sm bg-slate-950">R$ 0,00</div>
+          </div>
+          <p class="col-span-2 sm:col-span-3 text-[10px] text-slate-500">
+            <span id="edit-info-imposto"></span> Resultado = o que o cliente paga − imposto − gastos executados.
+          </p>
+        </div>
+
+        <!-- V17: RECEBIMENTOS -->
+        <div class="border border-slate-800 p-3 rounded-xl bg-slate-900/50 flex flex-col gap-2">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+            <span class="font-bold text-emerald-400"><i class="fa-solid fa-hand-holding-dollar"></i> Recebimentos do Cliente (marque o que já entrou)</span>
+            <button onclick="parcAdd('obra')" class="py-1 px-2.5 bg-[#FF7A00] hover:bg-orange-600 text-white rounded text-[11px] font-bold">
+              <i class="fa-solid fa-plus"></i> Parcela
+            </button>
+          </div>
+          <div id="parc-lista-obra" class="flex flex-col gap-1.5"></div>
+          <p id="parc-aviso-obra" class="text-[11px] text-slate-400"></p>
+        </div>
+
+        <div class="border border-slate-800 p-3 rounded-xl bg-slate-900/50 flex flex-col gap-2">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+            <span class="font-bold text-[#FF7A00]"><i class="fa-solid fa-receipt"></i> Compras / Insumos Pagos nesta Obra</span>
+            <button onclick="addGastoObra()" class="py-1 px-2.5 bg-[#FF7A00] hover:bg-orange-600 text-white rounded text-[11px] font-bold">
+              <i class="fa-solid fa-plus"></i> Adicionar Gasto
+            </button>
+          </div>
+
+          <div class="overflow-x-auto custom-scroll">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="text-slate-400 border-b border-slate-800">
+                  <th class="p-1.5 text-center w-10">Pago</th>
+                  <th class="p-1.5">Item / Descrição</th>
+                  <th class="p-1.5 text-center">Qtde</th>
+                  <th class="p-1.5 text-center">Unit Orçado (R$)</th>
+                  <th class="p-1.5 text-center">Unit Pago (R$)</th>
+                  <th class="p-1.5 text-right">Total Efetivo (R$)</th>
+                  <th class="p-1.5 text-center">Ação</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-gastos-obra-body" class="divide-y divide-slate-800/60"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="border border-slate-800 p-3 rounded-xl bg-slate-900/50 flex flex-col gap-2">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+            <span class="font-bold text-orange-400"><i class="fa-solid fa-user-gear"></i> Técnicos Envolvidos nesta Obra</span>
+            <button onclick="addTecnicoObra()" class="py-1 px-2.5 bg-orange-600 hover:bg-orange-500 text-white rounded text-[11px] font-bold">
+              <i class="fa-solid fa-plus"></i> Adicionar Técnico
+            </button>
+          </div>
+          <div id="lista-tecnicos-obra" class="flex flex-col gap-1.5"></div>
+        </div>
+
+        <!-- V17: CRONOGRAMA DA OBRA -->
+        <div class="border border-slate-800 p-3 rounded-xl bg-slate-900/50 flex flex-col gap-2">
+          <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-800 pb-1.5">
+            <span class="font-bold text-[#FF7A00]"><i class="fa-solid fa-calendar-days"></i> Cronograma (marque as etapas concluídas)</span>
+            <div class="flex gap-1.5">
+              <button onclick="cronoRegerar('obra')" title="Refaz as etapas sugeridas a partir dos dias da obra" class="py-1 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-bold"><i class="fa-solid fa-rotate"></i> Sugerir</button>
+              <button onclick="cronoAdd('obra')" class="py-1 px-2.5 bg-[#FF7A00] hover:bg-orange-600 text-white rounded text-[11px] font-bold"><i class="fa-solid fa-plus"></i> Etapa</button>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <label class="flex items-center gap-2 text-slate-400">Início:
+              <input type="date" id="crono-inicio-obra" oninput="cronoCfg('obra', 'inicio', this.value)" class="p-1 rounded border">
+            </label>
+            <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+              <input type="checkbox" id="crono-fds-obra" onchange="cronoCfg('obra', 'fimDeSemana', this.checked)" class="w-4 h-4 shrink-0 cursor-pointer">
+              Contar sábado e domingo
+            </label>
+          </div>
+          <div id="crono-lista-obra" class="flex flex-col gap-1.5"></div>
+          <p id="crono-aviso-obra" class="text-[11px] text-slate-400"></p>
+        </div>
+
+      </div>
+
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
+        <button onclick="fecharModalEdit()" class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold">Cancelar</button>
+        <button onclick="salvarAjustesObra()" class="py-2.5 px-4 bg-[#FF7A00] hover:bg-orange-600 text-white rounded-xl text-xs font-bold">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALHES & GERADOR DE PROPOSTA PDF OFICIAL DE 2 PÁGINAS -->
+  <div id="modal-detalhes" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <div class="bg-[#181b26] print-card border border-slate-700 rounded-2xl w-full max-w-3xl p-6 flex flex-col gap-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3 no-print">
+        <h3 id="modal-titulo" class="text-base font-bold text-[#FF7A00] flex items-center gap-2">
+          <i class="fa-solid fa-file-contract"></i> Proposta Comercial & Orçamento Técnico
+        </h3>
+        <button onclick="fecharModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div id="modal-conteudo" class="flex flex-col gap-4 text-xs text-slate-300 max-h-[70vh] overflow-y-auto custom-scroll pr-1"></div>
+
+      <div class="flex flex-wrap justify-between items-center gap-2 pt-3 border-t border-slate-800 no-print">
+        <div class="flex flex-wrap gap-2">
+          <button onclick="imprimirPDF()" class="py-2.5 px-4 bg-[#FF7A00] hover:bg-orange-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow">
+            <i class="fa-solid fa-file-pdf text-sm"></i> Gerar PDF / Imprimir Proposta
+          </button>
+          <button onclick="enviarWhatsAppProposta()" title="Copia o resumo para você colar no WhatsApp Web" class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow">
+            <i class="fa-brands fa-whatsapp text-sm"></i> Copiar resumo p/ WhatsApp
+          </button>
+        </div>
+        <button onclick="fecharModal()" class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- ===================================================================
+       SCRIPTS DO SISTEMA
+       Tudo em <script src> para o HTML ficar curto e o JS organizado em
+       js\. ATENCAO: sem type="module" - modulos nao carregam por file://
+       (bloqueio de CORS). A ordem importa: cada arquivo usa o anterior.
+         01-core         dados iniciais e estado global
+         02-regras       numeros, cronograma, parcelas, resumoObra (puras)
+         03-telas        abas 1, 2, 3 e os modais
+         04-relatorios   proposta em PDF e painel financeiro
+         05-exportacao   backup .json, Excel .xlsx, WhatsApp e o boot
+       =================================================================== -->
+  <script src="js/01-core.js"></script>
+  <script src="js/02-regras.js"></script>
+  <script src="js/03-telas.js"></script>
+  <script src="js/04-relatorios.js"></script>
+  <script src="js/05-exportacao.js"></script>
+</body>
+</html>

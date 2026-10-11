@@ -1,0 +1,23 @@
+﻿/* =====================================================================
+   PH Custos - entrada do Tailwind
+
+   Gera o CSS final em css/PH_custos_compilado.css, que substitui o
+   CDN. Motivo: cdn.tailwindcss.com gera o CSS em tempo de execucao e
+   o proprio Tailwind avisa que isso nao deve ser usado em producao.
+
+   Gerar:  npx @tailwindcss/cli -i build/entrada.css -o css/PH_custos_compilado.css
+   Ver:    instrucoes/03-manutencao.md
+   ===================================================================== */
+
+@import "tailwindcss";
+
+/* As classes sao usadas dentro de template literals no JS, por isso o
+   scanner precisa enxergar os arquivos .js tambem - senao classes como
+   "bg-orange-950/40" (dentro de uma string) ficam de fora do CSS. */
+@source "../public/index.html";
+@source "../public/html/*.html";
+@source "../public/js/*.js";
+@source "../css/PH_custos.css";
+
+/* O tema do projeto vive no PH_custos.css; aqui so importamos o que o
+   Tailwind cria. As regras propias ficam no arquivo original. */

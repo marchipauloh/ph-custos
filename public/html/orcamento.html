@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PH Custos - Proposta & Orçamento</title>
+  <link rel="stylesheet" href="../css/PH_custos_compilado.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/PH_custos.css">
+</head>
+<body class="p-3 sm:p-6 flex justify-center items-start">
+
+  <div class="w-full max-w-5xl flex flex-col gap-4">
+
+    <!-- HEADER COM LOGO PH LIGHTING EM LARANJA -->
+    <header class="flex items-center justify-between border-b border-orange-500/20 pb-3 no-print">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl overflow-hidden border border-orange-500/40 flex items-center justify-center bg-[#121212] shadow-lg shadow-orange-500/10">
+          <svg viewBox="0 0 200 200" class="w-full h-full p-1">
+            <rect width="200" height="200" fill="#121212" />
+            <rect x="25" y="25" width="150" height="110" rx="20" fill="#FF7A00" />
+            <line x1="55" y1="40" x2="55" y2="120" stroke="#121212" stroke-width="8" stroke-linecap="round" />
+            <circle cx="55" cy="70" r="10" fill="#121212" />
+            <line x1="85" y1="40" x2="85" y2="120" stroke="#121212" stroke-width="8" stroke-linecap="round" />
+            <circle cx="85" cy="95" r="10" fill="#121212" />
+            <line x1="115" y1="40" x2="115" y2="120" stroke="#121212" stroke-width="8" stroke-linecap="round" />
+            <circle cx="115" cy="55" r="10" fill="#121212" />
+            <line x1="145" y1="40" x2="145" y2="120" stroke="#121212" stroke-width="8" stroke-linecap="round" />
+            <circle cx="145" cy="105" r="10" fill="#121212" />
+            <text x="30" y="165" font-family="sans-serif" font-weight="900" font-size="32" fill="#FFFFFF">ph</text>
+            <text x="65" y="165" font-family="sans-serif" font-weight="300" font-size="32" fill="#FFFFFF">lighting</text>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-black text-white">PH Custos <span class="text-[#FF7A00]">Projetos</span></h1>
+          <p class="text-xs text-slate-400">Gestão de Insumos, Executado por Obra e Lucratividade</p>
+        </div>
+      </div>
+      <span class="text-xs bg-orange-950/60 text-[#FF7A00] px-3 py-1 rounded-full font-bold border border-orange-500/30">PH Lighting System</span>
+    </header>
+
+    <nav class="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1 bg-[#181b26] border border-slate-800 rounded-xl no-print" aria-label="Navegacao principal">
+      <a href="orcamento.html" class="menu-btn py-2.5 px-2 text-center rounded-lg text-xs font-bold transition-all no-underline text-slate-400 hover:bg-slate-800 ativo">1. Proposta &amp; Status</a>
+      <a href="materiais.html" class="menu-btn py-2.5 px-2 text-center rounded-lg text-xs font-bold transition-all no-underline text-slate-400 hover:bg-slate-800 ">2. Lista Materiais</a>
+      <a href="equipe.html" class="menu-btn py-2.5 px-2 text-center rounded-lg text-xs font-bold transition-all no-underline text-slate-400 hover:bg-slate-800 ">3. Equipe de Campo</a>
+      <a href="financeiro.html" class="menu-btn py-2.5 px-2 text-center rounded-lg text-xs font-bold transition-all no-underline text-slate-400 hover:bg-slate-800 ">4. Painel Financeiro</a>
+    </nav>
+
+    <!-- ABA 1: PROPOSTA & CONFIGURAÇÃO -->
+        <!-- ABA 1: PROPOSTA & CONFIGURAÇÃO -->
+        <section id="tab-orcamento" class="tab-section flex flex-col gap-4">
+
+          <!-- V17: aparece quando uma proposta salva foi reaberta para edição -->
+          <div id="banner-edicao" class="hidden flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-orange-950/50 border border-[#FF7A00] rounded-xl p-3 text-xs">
+            <div>
+              <strong id="banner-edicao-texto" class="text-[#FF7A00] block">Editando proposta</strong>
+              <span class="text-slate-400">Status, gastos lançados e recebimentos da obra são mantidos ao salvar.</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button onclick="salvarOrcamento(true)" class="py-1.5 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold"><i class="fa-solid fa-copy"></i> Salvar como nova</button>
+              <button onclick="sairModoEdicao()" class="py-1.5 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold"><i class="fa-solid fa-xmark"></i> Sair da edição</button>
+            </div>
+          </div>
+
+          <div id="bloco-status-inicial" class="bg-gradient-to-r from-slate-900 via-[#181b26] to-orange-950/30 border border-orange-500/30 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-lg">
+            <div>
+              <span class="text-xs text-[#FF7A00] font-bold uppercase tracking-wider block">Status Inicial do Orçamento</span>
+              <p class="text-xs text-slate-400">Escolha o estado inicial antes de gravar a proposta</p>
+            </div>
+            <div class="w-full sm:w-auto">
+              <select id="status-projeto" class="w-full sm:w-auto p-2.5 rounded-lg border text-xs font-bold bg-slate-900 text-white border-orange-500">
+                <option value="A Confirmar">⏳ A Confirmar (Em Análise)</option>
+                <option value="Agendado">📅 Agendado / Aceito pelo Cliente</option>
+                <option value="Recebido">✅ Concluído & Pago (Caixa)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+            <h2 class="text-xs font-bold uppercase text-[#FF7A00] border-b border-slate-800 pb-2">
+              <i class="fa-solid fa-folder-open"></i> Dados do Projeto
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Cliente / Projeto</label>
+                <input type="text" id="proj-nome" value="STARLANE BAR" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Dias de Trabalho</label>
+                <input type="number" id="proj-dias" value="5" min="1" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Valor Fixo Projeto (R$)</label>
+                <input type="number" id="proj-valor-fixo" value="2000" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Contato do Responsável</label>
+                <input type="text" id="cli-contato" placeholder="Nome de quem aprova" class="w-full p-2 rounded-lg border">
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">WhatsApp do Cliente</label>
+                <input type="tel" id="cli-fone" placeholder="(19) 99999-9999" class="w-full p-2 rounded-lg border">
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Local da Instalação</label>
+                <input type="text" id="cli-local" value="Holambra - SP" placeholder="Endereço / cidade" class="w-full p-2 rounded-lg border">
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+            <h2 class="text-xs font-bold uppercase text-orange-400 border-b border-slate-800 pb-2">
+              <i class="fa-solid fa-users-gear"></i> Mão de Obra Geral
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Engenheiro (Qtd | R$)</label>
+                <div class="flex gap-1">
+                  <input type="number" id="eng-q" value="1" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+                  <input type="number" id="eng-v" value="650" oninput="agendarCalcular()" class="w-2/3 p-2 rounded-lg border">
+                </div>
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Técnico (Qtd | R$)</label>
+                <div class="flex gap-1">
+                  <input type="number" id="tec-q" value="1" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+                  <input type="number" id="tec-v" value="450" oninput="agendarCalcular()" class="w-2/3 p-2 rounded-lg border">
+                </div>
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Auxiliar (Qtd | R$)</label>
+                <div class="flex gap-1">
+                  <input type="number" id="aux-q" value="1" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+                  <input type="number" id="aux-v" value="250" oninput="agendarCalcular()" class="w-2/3 p-2 rounded-lg border">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+            <h2 class="text-xs font-bold uppercase text-[#FF7A00] border-b border-slate-800 pb-2">
+              <i class="fa-solid fa-truck-fast"></i> Logística & Hotel
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Alimentação (Ref/Dia | R$ Ref)</label>
+                <div class="flex gap-1">
+                  <input type="number" id="alim-q" value="2" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+                  <input type="number" id="alim-v" value="50" oninput="agendarCalcular()" class="w-2/3 p-2 rounded-lg border">
+                </div>
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Carro (Km total | Pedágio R$)</label>
+                <div class="flex gap-1">
+                  <input type="number" id="carro-km" value="240" oninput="agendarCalcular()" class="w-1/2 p-2 rounded-lg border">
+                  <input type="number" id="carro-ped" value="80" oninput="agendarCalcular()" class="w-1/2 p-2 rounded-lg border">
+                </div>
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Hotel (Dias | Pessoas | R$)</label>
+                <div class="flex gap-1">
+                  <input type="number" id="hotel-dias" value="3" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+                  <input type="number" id="hotel-pess" value="4" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+                  <input type="number" id="hotel-v" value="450" oninput="agendarCalcular()" class="w-1/3 p-2 rounded-lg border">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- V17: CRONOGRAMA -->
+          <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+            <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-800 pb-2">
+              <h2 class="text-xs font-bold uppercase text-[#FF7A00]"><i class="fa-solid fa-calendar-days"></i> Cronograma da Obra</h2>
+              <div class="flex gap-1.5">
+                <button onclick="cronoRegerar('orc')" title="Refaz as etapas sugeridas a partir dos Dias de Trabalho" class="py-1 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-bold"><i class="fa-solid fa-rotate"></i> Sugerir pelos dias</button>
+                <button onclick="cronoAdd('orc')" class="py-1 px-2.5 bg-[#FF7A00] hover:bg-orange-600 text-white rounded text-[11px] font-bold"><i class="fa-solid fa-plus"></i> Etapa</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Início Previsto (opcional)</label>
+                <input type="date" id="crono-inicio-orc" oninput="cronoCfg('orc', 'inicio', this.value)" class="w-full p-2 rounded-lg border">
+              </div>
+              <label class="sm:col-span-2 flex items-center gap-2 text-slate-300 sm:pt-5 cursor-pointer">
+                <input type="checkbox" id="crono-fds-orc" onchange="cronoCfg('orc', 'fimDeSemana', this.checked)" class="w-4 h-4 shrink-0 cursor-pointer">
+                Contar sábado e domingo como dias de obra
+              </label>
+            </div>
+            <div id="crono-lista-orc" class="flex flex-col gap-1.5 text-xs"></div>
+            <p id="crono-aviso-orc" class="text-[11px] text-slate-400"></p>
+          </div>
+
+          <!-- V17: CONDIÇÕES DE PAGAMENTO -->
+          <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+            <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-800 pb-2">
+              <h2 class="text-xs font-bold uppercase text-[#FF7A00]"><i class="fa-solid fa-hand-holding-dollar"></i> Condições de Pagamento</h2>
+              <button onclick="parcAdd('orc')" class="py-1 px-2.5 bg-[#FF7A00] hover:bg-orange-600 text-white rounded text-[11px] font-bold"><i class="fa-solid fa-plus"></i> Parcela</button>
+            </div>
+            <div id="parc-lista-orc" class="flex flex-col gap-1.5 text-xs"></div>
+            <p id="parc-aviso-orc" class="text-[11px] text-slate-400"></p>
+          </div>
+
+          <div class="bg-[#181b26] border border-slate-800 rounded-xl p-4 flex flex-col gap-3 shadow-lg">
+            <h2 class="text-xs font-bold uppercase text-[#FF7A00] border-b border-slate-800 pb-2 flex items-center justify-between">
+              <span><i class="fa-solid fa-coins"></i> Detalhamento dos Custos Base</span>
+              <span class="text-[10px] text-slate-400 font-normal">Calculado Automaticamente</span>
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+                <span class="text-slate-400 block mb-1">👷 Mão de Obra:</span>
+                <strong id="card-cost-mo" class="text-orange-400 text-sm">R$ 0,00</strong>
+              </div>
+              <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+                <span class="text-slate-400 block mb-1">📦 Materiais (Aba 2):</span>
+                <strong id="card-cost-mat" class="text-[#FF7A00] text-sm">R$ 0,00</strong>
+              </div>
+              <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+                <span class="text-slate-400 block mb-1">🚚 Logística & Viagem:</span>
+                <strong id="card-cost-log" class="text-amber-400 text-sm">R$ 0,00</strong>
+              </div>
+              <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+                <span class="text-slate-400 block mb-1">🎯 Custo Base Total:</span>
+                <strong id="card-cost-total" class="text-rose-400 text-sm">R$ 0,00</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-orange-950/40 via-[#181b26] to-slate-900 border border-orange-500/30 rounded-xl p-4 flex flex-col gap-3 shadow-xl">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Reserva Técnica (%)</label>
+                <input type="number" id="taxa-reserva" value="10" step="0.1" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Margem / Lucro (%)</label>
+                <input type="number" id="taxa-margem" value="10" step="0.1" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Imposto NF (%)</label>
+                <input type="number" id="taxa-imposto" value="15" step="0.01" oninput="agendarCalcular()" class="w-full p-2 rounded-lg border">
+              </div>
+            </div>
+
+            <div class="my-1 border-t border-dashed border-slate-700"></div>
+
+            <!-- V18: clique na opção que o cliente escolheu (vale para parcelas e financeiro) -->
+            <p class="text-[11px] text-slate-400">Clique na opção que o cliente vai fechar:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm font-bold">
+              <button type="button" id="box-opcao-sem" onclick="selecionarOpcao('sem')" class="text-left p-3 rounded-xl border-2 transition-all">
+                <span class="text-xs block font-normal"><span id="tag-opcao-sem"></span> Opção A (Sem Nota Fiscal):</span>
+                <span id="res-sem-nota" class="text-xl text-[#FF7A00] font-black">R$ 0,00</span>
+              </button>
+              <button type="button" id="box-opcao-com" onclick="selecionarOpcao('com')" class="text-left p-3 rounded-xl border-2 transition-all">
+                <span class="text-xs block font-normal"><span id="tag-opcao-com"></span> Opção B (Com Nota Fiscal):</span>
+                <span id="res-com-nota" class="text-xl text-[#FF7A00] font-black">R$ 0,00</span>
+              </button>
+            </div>
+            <p id="nota-fator" class="text-[10px] text-slate-500 font-normal"></p>
+
+            <div class="flex gap-2">
+              <button onclick="salvarOrcamento()" class="flex-1 py-3 px-4 rounded-xl bg-[#FF7A00] hover:bg-orange-600 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-orange-500/10">
+                <i class="fa-solid fa-floppy-disk"></i> <span id="lbl-salvar-orc">Salvar no Financeiro</span>
+              </button>
+              <button onclick="enviarWhatsAppOrcamento()" title="Copia o resumo para você colar no WhatsApp Web" class="flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg">
+                <i class="fa-brands fa-whatsapp text-base"></i> Copiar p/ WhatsApp
+              </button>
+            </div>
+          </div>
+
+          <!-- V17: DADOS DA PH QUE APARECEM NA PROPOSTA -->
+          <details class="bg-[#181b26] border border-slate-800 rounded-xl p-4 shadow-lg text-xs">
+            <summary class="font-bold uppercase text-slate-300 cursor-pointer"><i class="fa-solid fa-building"></i> Dados da PH na proposta (CNPJ, contato, validade)</summary>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">CNPJ</label>
+                <input type="text" id="emp-cnpj" oninput="salvarEmpresa()" placeholder="00.000.000/0001-00" class="w-full p-2 rounded-lg border">
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Contato (telefone / e-mail)</label>
+                <input type="text" id="emp-contato" oninput="salvarEmpresa()" placeholder="(19) 99999-9999 • contato@..." class="w-full p-2 rounded-lg border">
+              </div>
+              <div>
+                <label class="text-slate-400 font-semibold block mb-1">Validade da Proposta (dias)</label>
+                <input type="number" id="emp-validade" value="15" min="1" oninput="salvarEmpresa()" class="w-full p-2 rounded-lg border">
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-2">Fica salvo neste navegador e vale para todas as propostas.</p>
+          </details>
+        </section>
+
+    <!-- MODAIS: ficam em todas as paginas porque podem abrir de qualquer
+         aba - a lista de propostas da Aba 4 abre os dois, e a Aba 1 abre
+         o de ajustes ao reabrir uma proposta. -->
+      <div id="modal-editar" role="dialog" aria-modal="true" aria-labelledby="modal-edit-titulo" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-[#181b26] border border-slate-700 rounded-2xl w-full max-w-4xl p-5 flex flex-col gap-4 shadow-2xl">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+            <h3 id="modal-edit-titulo" class="text-base font-bold text-[#FF7A00] flex items-center gap-2">
+              <i class="fa-solid fa-pen-to-square"></i> Ajustes da Obra: Controle de Compras & Equipe
+            </h3>
+            <button onclick="fecharModalEdit()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+
+          <div class="flex flex-col gap-3 text-xs max-h-[65vh] overflow-y-auto custom-scroll pr-1">
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 bg-slate-900 rounded-xl border border-slate-800">
+              <div>
+                <label class="text-slate-400 block mb-1">Valor Orçado c/ NF (R$)</label>
+                <input type="number" id="edit-val-orcado" step="0.01" min="0" oninput="recalcularEdit()" class="w-full p-2 rounded-lg border font-bold text-[#FF7A00]">
+              </div>
+              <div>
+                <label class="text-slate-400 block mb-1">Imposto NF (%)</label>
+                <input type="number" id="edit-taxa-imposto" step="0.01" min="0" oninput="recalcularEdit()" class="w-full p-2 rounded-lg border font-bold text-slate-300">
+              </div>
+              <div>
+                <label class="text-slate-400 block mb-1">Cliente Fechou</label>
+                <select id="edit-modalidade" onchange="recalcularEdit()" class="w-full p-2 rounded-lg border font-bold">
+                  <option value="com">Com NF (Opção B)</option>
+                  <option value="sem">Sem NF (Opção A)</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-slate-400 block mb-1">Cliente Paga (R$)</label>
+                <input type="number" id="edit-val-cliente" readonly class="w-full p-2 rounded-lg border font-bold text-slate-300">
+              </div>
+              <div>
+                <label class="text-slate-400 block mb-1">Total Gastos Executados (R$)</label>
+                <input type="number" id="edit-val-gastos" readonly class="w-full p-2 rounded-lg border font-bold text-slate-300">
+              </div>
+              <div>
+                <label class="text-slate-400 block mb-1">Resultado (Lucro / Prejuízo)</label>
+                <div id="edit-res-lucro" class="p-2 rounded-lg border font-black text-center text-sm bg-slate-950">R$ 0,00</div>
+              </div>
+              <p class="col-span-2 sm:col-span-3 text-[10px] text-slate-500">
+                <span id="edit-info-imposto"></span> Resultado = o que o cliente paga − imposto − gastos executados.
+              </p>
+            </div>
+
+            <!-- V17: RECEBIMENTOS -->
+            <div class="border border-slate-800 p-3 rounded-xl bg-slate-900/50 flex flex-col gap-2">
+              <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+                <span class="font-bold text-emerald-400"><i class="fa-solid fa-hand-holding-dollar"></i> Recebimentos do Cliente (marque o que já entrou)</span>
+                <button onclick="parcAdd('obra')" class="py-1 px-2.5 bg-[#FF7A00] hover:bg-orange-600 text-white rounded text-[11px] font-bold">
+                  <i class="fa-solid fa-plus"></i> Parcela
+                </button>
+              </div>
+              <div id="parc-lista-obra" class="flex flex-col gap-1.5"></div>
+              <p id="parc-aviso-obra" class="text-[11px] text-slate-400"></p>
+            </div>
+
+            <div class="border border-slate-800 p-3 rounded-xl bg-slate-900/50 flex flex-col gap-2">
+              <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+                <span class="font-bold text-[#FF7A00]"><i class="fa-solid fa-receipt"></i> Compras / Insumos Pagos nesta Obra</span>
+                <button onclick="addGastoObra()" class="py-1 px-2.5 bg-[#FF7A00] hover:bg-orange-600 text-white rounded text-[11px] font-bold">
+                  <i class="fa-solid fa-plus"></i> Adicionar Gasto
+                </button>
+              </div>
+
+              <div class="overflow-x-auto custom-scroll">
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr class="text-slate-400 border-b border-slate-800">
+                      <th class="p-1.5 text-center w-10">Pago</th>
+                      <th class="p-1.5">Item / Descrição</th>
+                      <th class="p-1.5 text-center">Qtde</th>
+                      <th class="p-1.5 text-center">Unit Orçado (R$)</th>
+                      <th class="p-1.5 text-center">Unit Pago (R$)</th>
+                      <th class="p-1.5 text-right">Total Efetivo (R$)</th>
+                      <th class="p-1.5 text-center">Ação</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabela-gastos-obra-body" class="divide-y divide-slate-800/60"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="border border-slate-800 p-3 rounded-xl bg-slate-900/50 flex flex-col gap-2">
+              <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+                <span class="font-bold text-orange-400"><i class="fa-solid fa-user-gear"></i> Técnicos Envolvidos nesta Obra</span>
+                <button onclick="addTecnicoObra()" class="py-1 px-2.5 bg-orange-600 hover:bg-orange-500 text-white rounded text-[11px] font-bold">
+                  <i class="fa-solid fa-plus"></i> Adicionar Técnico
+                </button>
+              </div>
+              <div id="lista-tecnicos-obra" class="flex flex-col gap-1.5"></div>
+            </div>
+
+            <!-- V17: CRONOGRAMA DA OBRA -->
+            <div class="border border-slate-800 p-3 rounded-xl bg-slate-900/50 flex flex-col gap-2">
+              <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-800 pb-1.5">
+                <span class="font-bold text-[#FF7A00]"><i class="fa-solid fa-calendar-days"></i> Cronograma (marque as etapas concluídas)</span>
+                <div class="flex gap-1.5">
+                  <button onclick="cronoRegerar('obra')" title="Refaz as etapas sugeridas a partir dos dias da obra" class="py-1 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-bold"><i class="fa-solid fa-rotate"></i> Sugerir</button>
+                  <button onclick="cronoAdd('obra')" class="py-1 px-2.5 bg-[#FF7A00] hover:bg-orange-600 text-white rounded text-[11px] font-bold"><i class="fa-solid fa-plus"></i> Etapa</button>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <label class="flex items-center gap-2 text-slate-400">Início:
+                  <input type="date" id="crono-inicio-obra" oninput="cronoCfg('obra', 'inicio', this.value)" class="p-1 rounded border">
+                </label>
+                <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+                  <input type="checkbox" id="crono-fds-obra" onchange="cronoCfg('obra', 'fimDeSemana', this.checked)" class="w-4 h-4 shrink-0 cursor-pointer">
+                  Contar sábado e domingo
+                </label>
+              </div>
+              <div id="crono-lista-obra" class="flex flex-col gap-1.5"></div>
+              <p id="crono-aviso-obra" class="text-[11px] text-slate-400"></p>
+            </div>
+
+          </div>
+
+          <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
+            <button onclick="fecharModalEdit()" class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold">Cancelar</button>
+            <button onclick="salvarAjustesObra()" class="py-2.5 px-4 bg-[#FF7A00] hover:bg-orange-600 text-white rounded-xl text-xs font-bold">Salvar Alterações</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL DETALHES & GERADOR DE PROPOSTA PDF OFICIAL DE 2 PÁGINAS -->
+      <div id="modal-detalhes" role="dialog" aria-modal="true" aria-labelledby="modal-detalhes-titulo" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-[#181b26] print-card border border-slate-700 rounded-2xl w-full max-w-3xl p-6 flex flex-col gap-4 shadow-2xl">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3 no-print">
+            <h3 id="modal-titulo" class="text-base font-bold text-[#FF7A00] flex items-center gap-2">
+              <i class="fa-solid fa-file-contract"></i> Proposta Comercial & Orçamento Técnico
+            </h3>
+            <button onclick="fecharModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+
+          <div id="modal-conteudo" class="flex flex-col gap-4 text-xs text-slate-300 max-h-[70vh] overflow-y-auto custom-scroll pr-1"></div>
+
+          <div class="flex flex-wrap justify-between items-center gap-2 pt-3 border-t border-slate-800 no-print">
+            <div class="flex flex-wrap gap-2">
+              <button onclick="imprimirPDF()" class="py-2.5 px-4 bg-[#FF7A00] hover:bg-orange-600 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow">
+                <i class="fa-solid fa-file-pdf text-sm"></i> Gerar PDF / Imprimir Proposta
+              </button>
+              <button onclick="enviarWhatsAppProposta()" title="Copia o resumo para você colar no WhatsApp Web" class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow">
+                <i class="fa-brands fa-whatsapp text-sm"></i> Copiar resumo p/ WhatsApp
+              </button>
+            </div>
+            <button onclick="fecharModal()" class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold">Fechar</button>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+  <script src="../data/valores.js"></script>
+  <script src="../js/00-valores.js"></script>
+  <script src="../js/01-core.js"></script>
+  <script src="../js/02-regras.js"></script>
+  <script src="../js/03-telas.js"></script>
+  <script src="../js/04-relatorios.js"></script>
+  <script src="../js/05-exportacao.js"></script>
+  <script src="../js/06-arquivos.js"></script>
+  <script src="../js/07-boot.js"></script>
+
+  <!-- Marca no menu o item da pagina atual e REVELA o conteudo.
+
+       O <section> da aba vem do arquivo original com class="hidden".
+       Isso existia para o jogo de abas dentro de uma pagina so. Como cada
+       aba agora e um HTML proprio, esse "hidden" esconde a pagina
+       inteira: a aba abre so o cabecalho, com o corpo em branco. Este
+       script e quem tira o "hidden" da secao da aba atual. -->
+  <script>
+    (function () {
+      var ativo = "orcamento" + '.html';
+
+      function revelar() {
+        document.querySelectorAll('.menu-btn').forEach(function (b) {
+          if (b.getAttribute('href') === ativo) b.classList.add('ativo');
+        });
+
+        // Tira o "hidden" da secao desta aba. Sem isto a pagina fica em
+        // branco: o cabecalho aparece, o conteudo nao.
+        var sec = document.getElementById('tab-' + ativo.replace('.html', ''));
+        if (sec) {
+          sec.classList.remove('hidden');
+          sec.classList.add('flex');
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', revelar);
+      } else {
+        revelar();
+      }
+    })();
+  </script>
+</body>
+</html>

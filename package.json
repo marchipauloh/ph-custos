@@ -1,0 +1,14 @@
+{
+  "name": "ph-custos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gera o CSS do Tailwind para o sistema (apenas desenvolvimento)",
+  "scripts": {
+    "css": "tailwindcss -i build/entrada.css -o public/css/PH_custos_compilado.css --minify",
+    "css:watch": "tailwindcss -i build/entrada.css -o public/css/PH_custos_compilado.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}
