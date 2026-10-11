@@ -1,0 +1,20 @@
+﻿# Arquivos temporarios de teste/geracao
+_sec.html
+_sec.txt
+_srv.js
+_mk.js
+_x.txt
+_f.txt
+_d.txt
+_t*.txt
+_recuperado.html
+_v20.html
+_n1.js
+node_modules/
+package-lock.json
+.DS_Store
+Thumbs.db
+
+# Resultados de teste
+testes/_chrome/
+testes/*.xlsx
