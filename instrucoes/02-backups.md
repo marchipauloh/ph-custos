@@ -1,34 +1,46 @@
-﻿# Exportação de arquivos
+# Backups e exportação
 
-Como os arquivos são salvos e para onde vão.
+Este guia explica como exportar, guardar e importar os dados.
 
----
+## Como o sistema exporta
 
-## Comportamento padrão (v28+)
+- O navegador salva o arquivo exportado na pasta **Downloads**.
+- O nome do arquivo contém o cliente, a data e a hora.
+- O sistema não cria backup automático.
 
-O sistema agora adota o comportamento padrão de aplicações web: ao exportar, o arquivo é automaticamente enviado para a pasta **Downloads** do seu navegador, identificado com carimbo de data/hora e o nome do cliente/projeto relacionado.
+## Botões da Aba 4
 
----
-
-## As 3 vias de exportação (Aba 4)
-
-| Botão | O que faz |
+| Botão | Função |
 |---|---|
-| **Backup (.json)** | Baixa o snapshot completo do sistema. Use para guardar ou transferir dados. |
-| **Excel** | Gera e baixa a planilha .xlsx formatada com fórmulas. |
-| **Importar** | Carrega um backup .json gravado anteriormente para restaurar os dados. |
+| **Backup (.json)** | Baixa o backup completo do sistema |
+| **Excel** | Baixa a planilha `.xlsx` com fórmulas |
+| **Importar** | Carrega um backup `.json` e restaura os dados |
 
----
+## Exportar um backup
 
-## Backup Automático
+1. Abra a **Aba 4**.
+2. Clique em **Backup (.json)**.
+3. Mova o arquivo da pasta **Downloads** para uma pasta segura.
 
-Além das exportações manuais, **cada vez que você salva uma proposta**, o sistema gera um arquivo .json de backup e o baixa automaticamente para a pasta Downloads. 
+## Importar um backup
 
-Este comportamento garante que você sempre tenha cópias de segurança sem precisar lembrar de exportar manualmente.
+1. Abra a **Aba 4**.
+2. Clique em **Importar**.
+3. Escolha o arquivo `.json`.
+4. Confirme a importação.
 
----
+O sistema valida o arquivo e migra backups de versões antigas.
 
-## Limitações importantes
+## Frequência recomendada
 
-- **Os arquivos entram, mas não saem da pasta Downloads:** O navegador controla onde os arquivos são salvos. Se você deseja organizá-los em pastas específicas, é necessário movê-los manualmente após o download.
-- **Não há sincronização:** Os arquivos são baixados para o armazenamento local do seu computador. Não há envio automático para servidores ou nuvem.
+Exporte um backup nestes momentos:
+
+- Ao fim de cada dia de trabalho.
+- Depois de salvar uma proposta importante.
+- Antes de limpar o cache do navegador.
+
+## Limitações
+
+- O navegador define a pasta de destino. O sistema não escolhe a pasta.
+- O sistema não envia arquivos para servidor ou nuvem.
+- Os dados de um computador não aparecem em outro. Importe o backup para transferir.

@@ -1,133 +1,102 @@
 # Como usar o sistema
 
-Guia do dia a dia. Do abrir ate gerar a proposta.
+Este guia cobre o uso diário, da abertura até a proposta em PDF.
 
----
+## Abrir o sistema
 
-## Abrir
+1. Abra o arquivo `public/index.html`.
+2. Aguarde o redirecionamento para a **Aba 1**.
 
-Dois cliques em `index.html`. Ele te leva para a Aba 1 em 3 segundos.
-
-Se aparecer uma barra amarela do Chrome embaixo, clique em **Avancado**
-e siga. Isso e normal para sistemas que abrem arquivos do proprio PC.
-
-**Use Chrome ou Edge.** No Firefox e Safari a escolha de pasta nao
-existe, e o sistema avisa quando voce tenta usar.
-
----
+- Use o Chrome ou o Edge.
+- Se o Chrome exibir uma barra amarela, clique em **Avançado** e continue. O aviso é normal para arquivos locais.
 
 ## As 4 abas
 
-| Aba | O que voce faz |
+| Aba | Função |
 |---|---|
-| **1. Proposta & Status** |orcamento, cronograma, parcelas, PDF, salvar |
-| **2. Lista Materiais** | Tabela de insumos da obra |
-| **3. Equipe de Campo** | Tecnicos e diarias |
-| **4. Painel Financeiro** | Historico, gastos, backup, Excel |
+| **1. Proposta & Status** | Preencher custos, cronograma e parcelas; salvar; gerar PDF |
+| **2. Lista Materiais** | Editar a tabela de materiais da obra |
+| **3. Equipe de Campo** | Editar técnicos e diárias |
+| **4. Painel Financeiro** | Consultar propostas, lançar gastos e exportar dados |
 
----
+## Montar uma proposta
 
-## Montando uma proposta (Aba 1)
+1. Preencha **Cliente** e **Nome do Projeto** na **Aba 1**.
+2. Preencha os custos de logística: alimentação, transporte e hotel.
+3. Abra a **Aba 2** e monte a lista de materiais.
+4. Abra a **Aba 3** e monte a equipe.
+5. Volte à **Aba 1** e ajuste o cronograma e as parcelas.
+6. Clique em **Salvar**.
 
-1. Preencha **Cliente** e **Nome do Projeto**
-2. Preencha os custos de **logistica** (alimentacao, transporte, hotel)
-3. Va na **Aba 2** eMonte a lista de materiais
-4. Va na **Aba 3** e monte a equipe
-5. **Volte na Aba 1** e ajuste o cronograma e as parcelas
-6. Clique em **Salvar**
+### O passo 6 é obrigatório
 
-### O passo 6 importa
+- O sistema guarda um rascunho ao trocar de aba.
+- Somente a proposta **salva** entra no PDF, no painel e na planilha.
 
-Materiais e equipe so entram na proposta quando voce salva. Navegar
-entre abas e seguro (o sistema guarda um rascunho), mas o que vai para
-o PDF, para o painel e para a planilha e o que foi **salvo**.
+## Cronograma
 
----
+O sistema sugere as etapas a partir dos dias de trabalho. Você pode:
 
-## Sobre o cronograma
+- Marcar uma etapa como **concluída**.
+- Adicionar uma etapa.
+- Remover uma etapa.
+- Reordenar as etapas.
+- Editar as datas de cada etapa.
 
-O sistema sugere as etapas a partir dos dias de trabalho. Voce pode:
+A marcação de concluída acompanha a etapa quando você reordena a lista.
 
-- Marcar uma etapa como **concluida** (o quadradinho)
-- Adicionar, remover ou reordenar etapas
--Editar as datas de cada etapa
+## Receber e gastar (Aba 4)
 
-A marcacao de concluida **acompanha a etapa**, mesmo se voce reordenar
-a lista. (Na versao antiga isso tinha um bug: a marcacao migrava para a
-etapa errada. Foi corrigido.)
+Na **Aba 4**, cada proposta salva aparece como um cartão. Nele você pode:
 
----
+- Marcar parcelas como pagas.
+- Lançar gastos.
+- Consultar **orçado**, **executado** e resultado.
 
-## Recebendo e gastando (Aba 4)
+### Orçado e executado
 
-Na aba **Painel Financeiro**:
-
-- Cada proposta salva aparece como um cartao
-- Voce marca **parcelas como pagas**
-- Voce lanca **gastos** (o que realmente foi gasto)
-- O painel mostra **orcado x executado x resultado**
-
-### Orcado x executado
-
-- **Orcado** e o que foi calculado na proposta
-- **Executado** e a soma dos gastos lancados
-- Se voce reeditar o orcamento de uma proposta que ja tem gastos, o
-  executado **nao e sobrescrito** - os gastos reais sao preservados
-
----
+- **Orçado** é o valor calculado na proposta.
+- **Executado** é a soma dos gastos lançados.
+- O sistema preserva os gastos lançados quando você edita o orçamento.
 
 ## Gerar o PDF
 
-Na Aba 1, o botao de PDF abre a proposta pronta para imprimir.
-Escolha "Salvar como PDF" na janela de impressao.
+1. Abra a **Aba 4**.
+2. Clique no botão **Ver proposta e gerar PDF** do cartão.
+3. Clique em **Gerar PDF / Imprimir Proposta**.
+4. Escolha **Salvar como PDF** na janela de impressão.
 
-O PDF sai em **A4** com a identidade da PH Lighting.
+O PDF sai em A4 com a identidade da PH Lighting.
 
----
+## Exportar dados
 
-## Exportar
+Na **Aba 4**, use os botões:
 
-Na Aba 4:
-
-| Botao | O que faz |
+| Botão | Função |
 |---|---|
-| **Backup (.json)** | Salva todos os dados. Use para guardar ou transferir |
-| **Excel (.xlsx)** | Planilha com 7 abas e formulas vivas |
-| **Salvar no PC** | Grava na pasta oficial E deixa voce escolher outra |
+| **Backup (.json)** | Baixa todos os dados em um arquivo `.json` |
+| **Excel** | Baixa uma planilha `.xlsx` com 7 abas |
+| **Importar** | Carrega um backup `.json` no sistema |
 
-O `.json` e o **unico** formato que volta para o sistema (botao
-"Importar backup"). A planilha e para ler e arquivar.
+- Somente o `.json` volta para o sistema.
+- A planilha serve para leitura e arquivo.
+- A aba **Propostas** da planilha usa fórmulas. Os totais se atualizam quando você edita um gasto no Excel.
 
-### Formulas vivas do Excel
-
-A aba Propostas da planilha tem **formulas**, nao valores fixos. Se
-voce editar um gasto ou marcar uma parcela dentro do Excel, os totais
-se atualizam sozinhos. Isso e proposital - da para conferir a planilha
-sem sair dela.
-
----
-
-## Nomes dos arquivos
+## Nomes dos arquivos exportados
 
 ```
 ph_custos_backup_Studio-Fronteira-Cia_2026-10-10_22h41.json
 ph_custos_planilha_Studio-Fronteira-Cia_2026-10-10_22h41.xlsx
 ```
 
-Data, hora, minuto e o nome do projeto/cliente. Sem cliente
-preenchido, sai so o carimbo de data e hora.
-
----
+O nome contém o tipo, o cliente, a data e a hora. Sem cliente preenchido, o nome contém só a data e a hora.
 
 ## Onde os dados ficam
 
-No **navegador do seu computador**, em cada navegador e cada usuario.
+O sistema guarda os dados no navegador de cada usuário.
 
-Isso significa que:
-- Nao existe servidor guardando suas propostas
-- Limpar o historico/cache do Chrome **apaga tudo**
-- Outro computador nao ve as suas propostas
+- Nenhum servidor guarda as propostas.
+- Limpar o cache do Chrome apaga todas as propostas.
+- Outro computador não vê as suas propostas.
 
-**Por isso: configure o backup automatico** (ver
-[02-backups.md](02-backups.md)). Ele grava um `.json` a cada proposta
-salva.
+Exporte um backup com frequência. Veja [02-backups.md](02-backups.md).

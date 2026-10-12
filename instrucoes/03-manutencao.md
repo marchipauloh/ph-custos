@@ -1,193 +1,152 @@
-﻿# Manutencao e modificacao
+# Manutenção e modificação
 
-Onde mexer em cada coisa, e os cuidados.
+Este guia indica qual arquivo editar para cada pedido.
 
----
+Todos os arquivos da aplicação ficam em `public/`. O servidor recebe essa pasta por FTP.
 
-## Mapa: o que mexer em cada pedido
+## Mapa de edição
 
-| Quero... | Arquivo |
+| Pedido | Arquivo |
 |---|---|
-| ...mudar o preco/quantidade padrao dos materiais | `data/valores.json` |
-| ...mudar os tecnicos da equipe | `data/valores.json` |
-| ...mudar as cores, o tema | `css/PH_custos.css` |
-| ...mudar o PDF (A4, identidade) | `css/PH_custos.css` |
-| ...mudar uma regra de calculo | `js/02-regras.js` |
-| ...mudar o layout de uma tela | `html/*.html` (veja o aviso) |
-| ...mudar os nomes dos arquivos exportados | `js/06-arquivos.js` |
-| ...mudar o que o Excel exporta | `js/05-exportacao.js` |
-| ...mudar o painel financeiro | `js/04-relatorios.js` |
+| Alterar preço ou quantidade padrão dos materiais | `public/data/valores.json` |
+| Alterar os técnicos da equipe | `public/data/valores.json` |
+| Alterar cores e tema | `public/css/PH_custos.css` |
+| Alterar o PDF | `public/css/PH_custos.css` |
+| Alterar uma regra de cálculo | `public/js/02-regras.js` |
+| Alterar o layout de uma aba | `PH_projetos.html` |
+| Alterar os nomes dos arquivos exportados | `public/js/06-arquivos.js` |
+| Alterar a planilha Excel | `public/js/05-exportacao.js` |
+| Alterar o painel financeiro | `public/js/04-relatorios.js` |
 
----
+Depois de editar, envie o conteúdo de `public/` ao servidor. Veja [05-servidor.md](05-servidor.md).
 
-## Valores padrao
+## Valores padrão
 
-```
-data/valores.json                     <- edite aqui
-node ferramentas/gerar-config.js      <- regere
-```
+1. Edite `public/data/valores.json`.
+2. Execute `node ferramentas/gerar-config.js`.
 
-O gerador **valida antes de escrever** e avisa sem gerar se:
-- um material estiver sem preco
-- as parcelas nao somarem 100%
-- faltar campo obrigatorio
+O gerador valida os dados antes de escrever. Ele recusa gerar o arquivo nestes casos:
 
-### Por que existe o `valores.js`
+- Um material sem preço.
+- Parcelas que não somam 100%.
+- Um campo obrigatório ausente.
 
-O navegador bloqueia `fetch()` de arquivo local (CORS). Se usasse o
-`.json` direto, o sistema so funcionaria com servidor. O `.js` gerado
-faz funcionar em `file://` **e** em HTTP.
+### Por que o `valores.js` existe
 
-**Regra:** edite o `.json`, nunca o `.js`.
+- O navegador bloqueia `fetch()` de arquivos locais.
+- O sistema lê o `.js` com a tag `<script>`.
+- O `.js` funciona em `file://` e em HTTP.
 
----
+**Regra:** edite o `.json`. Nunca edite o `.js`.
 
-## Layout das telas
+Envie os dois arquivos ao servidor.
 
-⚠️ **Os 4 HTMLs sao gerados.** Para mudar de verdade:
+## Layout das abas
 
-1. Edite `PH_projetos.html`
-2. Rode `node ferramentas/gerar-paginas.js`
+O gerador cria os 4 arquivos de `public/html/` a partir de `PH_projetos.html`.
 
-Editar `html/*.html` direto funciona, mas o gerador sobrescreve na
-proxima execucao.
+1. Edite `PH_projetos.html`.
+2. Execute `node ferramentas/gerar-paginas.js`.
 
-**Se voce quer editar direto e nao usar o gerador**, me chame: eu tiro
-o gerador do fluxo e deixo os HTMLs como fonte unica.
+O gerador sobrescreve qualquer edição feita direto em `public/html/*.html`.
 
----
+## CSS compilado
 
-## Regras de calculo
+O CSS da aplicação vem do Tailwind compilado, não do CDN.
 
-O arquivo `js/02-regras.js` tem as funcoes **puras** (sem DOM). E o
-que os testes exercitam.
+1. Execute `npm install` na primeira vez.
+2. Execute `npm run css`.
 
-Exemplos:
+- O comando grava `public/css/PH_custos_compilado.css`.
+- O comando `npm run css:watch` regera o arquivo a cada alteração.
+- Execute `npm run css` de novo ao adicionar uma classe nova dentro de uma string do JavaScript.
+- O arquivo `build/entrada.css` define quais arquivos o Tailwind analisa.
+- Envie o arquivo compilado ao servidor. O servidor não gera CSS.
 
-| Funcao | O que faz |
+## Regras de cálculo
+
+O arquivo `public/js/02-regras.js` contém as funções puras, sem acesso ao DOM.
+
+| Função | O que faz |
 |---|---|
-| `parseNum` | le "R$ 1.234,56" e "1234.56" |
-| `r2` | arredonda corrigindo erro de float |
-| `resumoObra` | o numero que aparece no painel, no modal e no PDF |
-| `valoresParcelas` | divide em parcelas, a ultima absorve os centavos |
-| `gerarEtapasPadrao` | monta as etapas do cronograma |
+| `parseNum` | Lê `R$ 1.234,56` e `1234.56` |
+| `r2` | Arredonda corrigindo erros de ponto flutuante |
+| `resumoObra` | Calcula os totais do painel, do modal e do PDF |
+| `valoresParcelas` | Divide o total em parcelas; a última absorve os centavos |
+| `gerarEtapasPadrao` | Cria as etapas do cronograma |
+| `normalizarProjeto` | Valida e migra cada proposta importada |
 
-### Regra de ouro ao mexer aqui
+### Regra de ouro
 
-Se voce mudar uma regra de calculo, **mude o teste junto**
-(`testes/regras.teste.js`). E o que garante que a regra nova nao
-quebra os totais que voce jashow.
-
----
+- O arquivo `testes/regras.teste.js` contém **cópias** das funções.
+- Edite o teste junto com a regra.
+- Execute `node testes/regras.teste.js` antes de publicar.
 
 ## Cores e tema
 
-```
-css/PH_custos.css
-```
+O arquivo `public/css/PH_custos.css` define as variáveis do tema.
 
-Variaveis principais:
+| Variável | Valor | Uso |
+|---|---|---|
+| `--bg-dark` | `#0f1117` | Fundo da página |
+| `--card-bg` | `#181b26` | Fundo dos cartões |
+| `--orange-primary` | `#FF7A00` | Cor da marca PH |
+| `--orange-hover` | `#e06c00` | Cor de destaque ao passar o mouse |
+| `--orange-dark` | `#3a1c00` | Fundo laranja escuro |
 
-| Variavel | Uso |
-|---|---|
-| `--laranja` / `#FF7A00` | cor da marca PH |
-| `#181b26` | fundo dos cards |
-| `#121212` | fundo do logo |
+## Segurança
 
----
+### Regra do `esc()`
 
-## Seguranca (leia antes de mexer no JS)
-
-### A defesa atual
-
-Todo dado que vem do usuario **precisa** passar por `esc()` antes de
-entrar em HTML:
+Passe todo dado do usuário por `esc()` antes de inseri-lo em HTML.
 
 ```js
 // CERTO
 ${esc(p.nome)}
 
-// ERRADO - abre brecha de XSS
+// ERRADO: abre brecha de XSS
 ${p.nome}
 ```
 
-### Onde isso importa
+### Arquivos que montam HTML por string
 
-O sistema monta HTML por string (`innerHTML`) em varios pontos
-principalmente:
+- `public/js/04-relatorios.js`: lista de propostas do painel.
+- `public/js/03-telas.js`: modais, tabelas de materiais e equipe.
+- `public/js/06-arquivos.js`: nome do arquivo exportado.
 
-- `js/04-relatorios.js` - painel financeiro (lista de propostas)
-- `js/03-telas.js` - modais, tabelas de materiais e equipe
-- `js/06-arquivos.js` - nome do arquivo na hora de exportar
+### Criar um campo novo
 
-### Se voce criar um campo novo
+1. Crie o campo no HTML com um `id`.
+2. Leia e valide o valor no JavaScript.
+3. Use `esc()` ao exibir o valor com `innerHTML`.
+4. Valide o campo em `normalizarProjeto`.
 
-1. No HTML: `id="meu-campo"`
-2. No JS, ao ler: le e valida
-3. Ao mostrar: **sempre** `esc()` no `innerHTML`
-4. No backup importado: valide o valor em `normalizarProjeto`
+A função `normalizarProjeto` em `public/js/02-regras.js` impede que um `.json` adulterado injete conteúdo.
 
-### Validacao de dado importado
+## Migrações de backup
 
-`normalizarProjeto` (em `js/02-regras.js`) e a barreira: ela garante
-que um `.json` adulterado nao injete nada. Ao criar um campo novo,
-**inclua-o la**.
+- A função `normalizarProjeto` migra backups das versões 15 a 21.
+- Não apague essas migrações.
+- Backups antigos precisam continuar abrindo.
 
----
+## Testes
 
-## O CDN do Tailwind
+| Comando | O que verifica |
+|---|---|
+| `node testes/regras.teste.js` | Regras de cálculo |
+| `node testes/paginas.teste.js` | Abertura das 4 abas no Chrome |
+| `node testes/rascunho.teste.js` | Rascunho entre abas |
 
-O CSS usa `cdn.tailwindcss.com`, que gera os estilos em tempo de
-execucao.
+- Os testes de página exigem o Chrome em `C:\Program Files\Google\Chrome\Application\chrome.exe`.
+- Os testes de página abrem os arquivos de `public/html/`.
 
-**Para producao, o recomendado e compilar:**
+## Se houver um backend
 
-```bash
-npm install -D tailwindcss
-npx tailwindcss -i css/entrada.css -o css/PH_custos_compilado.css
-```
+A versão 27 removeu a gravação em pastas. O sistema só baixa arquivos.
 
-Depois troque o `<script src="https://cdn.tailwindcss.com">` pelo
-`<link rel="stylesheet" href="../css/PH_custos_compilado.css">` em
-cada `html/*.html` e no `index.html`.
+Para gravar no servidor:
 
-**Isso nao e obrigatorio.** O CDN funciona. Compilar deixa o sistema
-independente de internet e mais rapido.
+1. Crie uma função que envia o arquivo por `fetch()` com `POST`.
+2. Chame essa função em `baixarArquivo()`, em `public/js/06-arquivos.js`.
 
----
-
-## Se um dia houver backend
-
-Toda a gravacao esta isolada em **uma funcao**:
-
-```
-js/06-arquivos.js  ->  gravarNaPasta()
-```
-
-Com servidor, troque essa funcao por un `fetch()` POST:
-
-```js
-async function gravarNaPasta(tipo, nomeArquivo, dados) {
-  await fetch('/api/salvar', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/octet-stream' },
-    body: dados
-  });
-}
-```
-
-O resto do sistema (nomes, data, cliente, botao, avisos) continua
-igual. Detalhes em `versoes/v24.md`.
-
----
-
-## Antes de commitar
-
-```bash
-node testes/regras.teste.js
-```
-
-Se mexer no layout, tambem:
-```bash
-node testes/paginas.teste.js
-```
+Essa mudança exige um servidor que execute código. O servidor atual não executa.
