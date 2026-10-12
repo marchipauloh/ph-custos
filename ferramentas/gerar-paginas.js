@@ -1,7 +1,7 @@
 /* =====================================================================
    PH Custos - gerador das paginas
    ---------------------------------------------------------------------
-   Monta os 4 HTMLs de html/ a partir do arquivo unico PH_projetos.html.
+   Monta os 4 HTMLs de public/html/ a partir do arquivo unico PH_projetos.html.
 
    Por que gerar em vez de escrever na mao?
      - o corpo de cada aba e o MESMO codigo que ja funcionava; o script
@@ -10,7 +10,7 @@
      - cabecalho, menu e lista de scripts ficam iguais nas 4 paginas.
      - da para rodar de novo a qualquer momento sem medo.
 
-   CUIDADO: se voce editar direto html/orcamento.html, o proximo
+   CUIDADO: se voce editar direto public/html/orcamento.html, o proximo
    `node ferramentas/gerar-paginas.js` sobrescreve. Edite o
    PH_projetos.html (ou o bloco SECOES) e regere.
    ===================================================================== */
@@ -18,8 +18,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const RAIZ = 'D:\\msys\\ph-custos';
-const PUBLIC_ROOT = 'D:\\msys\\ph-custos\\public';
+const RAIZ = path.join(__dirname, '..');
+const PUBLIC_ROOT = path.join(RAIZ, 'public');
 const ORIGEM = path.join(RAIZ, 'PH_projetos.html');
 const SAIDA = path.join(PUBLIC_ROOT, 'html');
 const CSS_PATH = path.join(PUBLIC_ROOT, 'css', 'PH_custos.css');
@@ -120,8 +120,8 @@ const SEMPRE = ['00-valores', '01-core', '07-boot'];
 
 // Descobre o nome real do arquivo pelo prefixo numerico (evita digitar de novo)
 function nomeJs(prefixo) {
-  const achado = fs.readdirSync(path.join(RAIZ, 'js')).find(f => f.indexOf(prefixo) === 0);
-  if (!achado) falhar('nao achei o js/' + prefixo + '*.js');
+  const achado = fs.readdirSync(path.join(PUBLIC_ROOT, 'js')).find(f => f.indexOf(prefixo) === 0);
+  if (!achado) falhar('nao achei o public/js/' + prefixo + '*.js');
   return achado;
 }
 
@@ -233,7 +233,7 @@ const MARGEM_CSS = `
       color: #fff !important;
     }`;
 
-if (!fs.existsSync(CSS_PATH)) falhar('nao achei o css/PH_custos.css');
+if (!fs.existsSync(CSS_PATH)) falhar('nao achei o public/css/PH_custos.css');
 const cssAtual = fs.readFileSync(CSS_PATH, 'utf8').replace(MARGEM_CSS, '');
 fs.writeFileSync(CSS_PATH, cssAtual + MARGEM_CSS, 'utf8');
 

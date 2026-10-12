@@ -7,7 +7,7 @@ const path = require('path');
 
 const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const RAIZ = path.join(__dirname, '..');
-const SAIDA = path.join(RAIZ, '_chrome');
+const SAIDA = path.join(__dirname, '_chrome');
 
 if (!fs.existsSync(CHROME)) { console.log('Chrome nao encontrado em ' + CHROME); process.exit(2); }
 fs.mkdirSync(SAIDA, { recursive: true });
@@ -37,7 +37,7 @@ const CONFERIR = {
   let falhas = 0;
 
   for (const pag of PAGINAS) {
-    const url = 'file:///' + path.join(RAIZ, 'html', pag + '.html').replace(/\\/g, '/');
+    const url = 'file:///' + path.join(RAIZ, 'public', 'html', pag + '.html').replace(/\\/g, '/');
     const dump = path.join(SAIDA, pag + '.html');
 
     const dom = await chrome([

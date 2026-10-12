@@ -17,4 +17,8 @@ Thumbs.db
 
 # Resultados de teste
 testes/_chrome/
+_perfil_teste/
+_perfil_tmp/
+_estado.json
+public/html/_t_*.html
 testes/*.xlsx

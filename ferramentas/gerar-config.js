@@ -1,7 +1,7 @@
 /* =====================================================================
    PH Custos - gerador de configuracao
    ---------------------------------------------------------------------
-   Converte  data/valores.json  em  data/valores.js
+   Converte  public/data/valores.json  em  public/data/valores.js
 
    Por que dois arquivos?
      O .json e onde voce EDITA (familiar, formatado, versionavel).
@@ -9,7 +9,7 @@
      arquivo local (CORS) - abrir o HTML com dois cliques quebraria.
 
    Quando alterar valores: edite o .json, rode este script, e o
-   data/valores.js nasce atualizado.
+   public/data/valores.js nasce atualizado.
 
        node ferramentas/gerar-config.js
    ===================================================================== */
@@ -18,17 +18,17 @@ const fs = require('fs');
 const path = require('path');
 
 const RAIZ = path.join(__dirname, '..');
-const JSON_PATH = path.join(RAIZ, 'data', 'valores.json');
-const JS_PATH = path.join(RAIZ, 'data', 'valores.js');
+const JSON_PATH = path.join(RAIZ, 'public', 'data', 'valores.json');
+const JS_PATH = path.join(RAIZ, 'public', 'data', 'valores.js');
 
 const CABECALHO = `/* =====================================================================
    PH Custos - valores padrao  >>  ARQUIVO GERADO, NAO EDITE DIRETO <<
 
-   Este arquivo e o data/valores.json convertido para .js, para o sistema
+   Este arquivo e o public/data/valores.json convertido para .js, para o sistema
    conseguir ler em file:// (o navegador bloqueia fetch() de arquivos
    locais por CORS - o .json ficaria inutilizavel abrindo com dois cliques).
 
-   Quer mudar um valor? Edite  data/valores.json  e regere com:
+   Quer mudar um valor? Edite  public/data/valores.json  e regere com:
 
        node ferramentas/gerar-config.js
 

@@ -1,11 +1,11 @@
 /* =====================================================================
    PH Custos - valores padrao  >>  ARQUIVO GERADO, NAO EDITE DIRETO <<
 
-   Este arquivo e o data/valores.json convertido para .js, para o sistema
+   Este arquivo e o public/data/valores.json convertido para .js, para o sistema
    conseguir ler em file:// (o navegador bloqueia fetch() de arquivos
    locais por CORS - o .json ficaria inutilizavel abrindo com dois cliques).
 
-   Quer mudar um valor? Edite  data/valores.json  e regere com:
+   Quer mudar um valor? Edite  public/data/valores.json  e regere com:
 
        node ferramentas/gerar-config.js
 

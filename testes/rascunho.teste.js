@@ -37,7 +37,7 @@ const PERFIL = path.join(RAIZ, '_perfil_teste');
 // O estado e um objeto {chaveLocalStorage: valor}. A semente do <head>
 // faz JSON.parse do que vier depois de "#s=", entao aqui serializamos.
 function urlDe(pag, estado) {
-  const base = 'file:///' + path.join(RAIZ, 'html', pag).replace(/\\/g, '/');
+  const base = 'file:///' + path.join(RAIZ, 'public', 'html', pag).replace(/\\/g, '/');
   if (!estado) return base;
   return base + '#s=' + encodeURIComponent(JSON.stringify(estado));
 }
@@ -61,7 +61,7 @@ const CHAVE = 'ph_rascunho';
 // chave no localStorage antes dos scripts do sistema carregarem. Assim o
 // teste controla o ponto de partida e o estado atravessa as execucoes.
 function comAgente(pag, codigo) {
-  const original = fs.readFileSync(path.join(RAIZ, 'html', pag), 'utf8');
+  const original = fs.readFileSync(path.join(RAIZ, 'public', 'html', pag), 'utf8');
 
   const semente = '<script>(function(){\n' +
     '  if (location.hash.indexOf("#s=") < 0) return;\n' +
@@ -82,7 +82,7 @@ function comAgente(pag, codigo) {
     .replace('<head>', '<head>' + semente)
     .replace('</body>', agente + '\n</body>');
 
-  fs.writeFileSync(path.join(RAIZ, 'html', '_t_' + pag), html, 'utf8');
+  fs.writeFileSync(path.join(RAIZ, 'public', 'html', '_t_' + pag), html, 'utf8');
   return '_t_' + pag;
 }
 
@@ -93,7 +93,7 @@ function titulo(dom) {
 
 function limpar() {
   ['orcamento', 'materiais', 'equipe', 'financeiro'].forEach(n => {
-    try { fs.unlinkSync(path.join(RAIZ, 'html', '_t_' + n + '.html')); } catch (e) {}
+    try { fs.unlinkSync(path.join(RAIZ, 'public', 'html', '_t_' + n + '.html')); } catch (e) {}
   });
 }
 
