@@ -1,104 +1,97 @@
-﻿# Problemas e solucoes
+# Problemas e soluções
 
-O que fazer quando algo nao funciona.
+Este guia lista falhas comuns e a correção de cada uma.
 
----
+## A página abre em branco
 
-## A pagina abre em branco
+**Causa:** o arquivo HTML está separado das pastas `css/`, `js/` e `data/`.
 
-**Causa mais comum: pasta faltando.**
+**Solução:**
 
-O sistema depende de `css/`, `js/` e `data/` andarem junto com o HTML.
-Se voce moveu so o `.html` para outro lugar, a pagina abre sem estilo
-e sem nenhuma aba funcionando.
+1. Copie a pasta `public/` inteira, ou envie-a inteira ao servidor.
+2. Abra `index.html` na nova localização.
 
-**Solucao:** copie a pasta `ph-custos` inteira, nao so o arquivo.
+## Uma aba abre sem tabela
 
----
+**Causa:** o navegador não carregou `data/valores.js`.
 
-## Uma aba abre vazia, sem tabela
+**Solução:**
 
-**Causa:** `data/valores.js` nao foi carregado.
+1. Confirme que `public/data/valores.js` existe.
+2. Execute `node ferramentas/gerar-config.js`.
+3. Envie `public/data/valores.js` ao servidor.
 
-Confirme que o arquivo existe. Se estiver vazio ou faltando, regere:
+## A proposta não aparece depois de Salvar
 
-```
-node ferramentas/gerar-config.js
-```
+**Causa:** os dados vêm de uma versão anterior à v21.
 
----
+**Solução:**
 
+1. Exporte um backup `.json` antigo.
+2. Clique em **Importar** na **Aba 4**.
+3. Escolha o arquivo `.json`.
 
+A importação migra os dados sozinha.
 
+## O hotel não zera com 0 pessoas
 
+**Causa:** o sistema está em uma versão até a v20.
 
+**Solução:** use a v21 ou posterior. Veja [HISTORICO.md](../versoes/HISTORICO.md).
 
+## A etapa concluída muda de lugar ao reordenar
 
-## Cliquei em "Salvar" e a proposta nao apareceu
+**Causa:** o sistema está em uma versão anterior à v21.
 
-**Causa:** dados muito antigos, salvos antes de uma das correcoes.
+**Solução:** use a v21 ou posterior.
 
-**Solucao:** exporte um backup `.json` antigo e importe pela Aba 4. A
-migracao roda sozinha na importacao.
+## As propostas sumiram
 
----
+**Causa:** o navegador apagou os dados ao limpar o cache.
 
-## O valor do hotel nao zera quando coloco 0 pessoas
+**Com backup:**
 
-**Isso ja foi corrigido.** Na versao antiga (ate a v20) o campo
-"Pessoas" nao zerava o hotel, apesar do rotulo dizer que zerava.
+1. Abra a **Aba 4**.
+2. Clique em **Importar**.
+3. Escolha o `.json`.
 
-Se ainda acontecer, voce esta numa versao antiga. Veja
-`versoes/HISTORICO.md`.
+**Sem backup:** os dados não têm recuperação. Exporte backups com frequência.
 
----
+## O layout aparece sem cores
 
-## A etapa concluida mudou de lugar quando reordenei
+**Causa:** o arquivo `PH_custos_compilado.css` não existe ou não carregou.
 
-**Isso ja foi corrigido** na v21. Antes, a marcacao de concluida era
-salva por posicao na lista, entao reordenar migrava a marcacao para
-a etapa errada.
+**Solução:**
 
-Se ainda acontecer, voce esta numa versao antiga.
+1. Execute `npm install`.
+2. Execute `npm run css`.
+3. Confirme que `public/css/PH_custos_compilado.css` existe.
+4. Envie o arquivo ao servidor.
 
----
+O sistema continua funcional. Só o visual falha.
 
-## Perdi as propostas
+## Os ícones não aparecem
 
-**Causa:** os dados ficam no navegador. Limpar historico/cache do
-Chrome apaga tudo.
+**Causa:** o navegador não alcançou o CDN do Font Awesome.
 
-**Se voce tem backup:** Aba 4 > **Importar backup** > escolha o `.json`.
+**Solução:** conecte o computador à internet.
 
-**Se nao tem:** nao ha como recuperar. Por isso o backup automatico
-existe - configure a pasta em `02-backups.md`.
+## O Chrome exibe uma barra amarela ao abrir
 
----
+**Causa:** o Chrome avisa que o arquivo vem do computador local.
 
-## O layout quebrou (sem cores, sem estilo)
+**Solução:** clique em **Avançado** e continue. O aviso não indica erro nem vírus.
 
-**Causa:** o Tailwind vem de CDN (`cdn.tailwindcss.com`). Se o
-servidor esta sem internet, ou o CDN caiu, o CSS nao carrega.
+## Erro ao executar `npm run css`
 
-**O sistema continua funcionando** - so o visual fica feio.
+**Mensagem:** `SyntaxError: Unexpected token '﻿'`
 
-**Solucao definitiva:** compilar o CSS (ver `03-manutencao.md`).
+**Causa:** o editor salvou `package.json` com BOM.
 
----
+**Solução:** salve o arquivo como UTF-8 sem BOM.
 
-## O Chrome pediu permissao ao abrir
+## Erro no console
 
-Barra amarela embaixo da URL, dizendo que o arquivo vem do seu
-computador.
-
-**Nao e erro nem virus.** E o aviso padrao para qualquer sistema que
-rode assim. Clique em **Avancado** e siga.
-
----
-
-## Erro no console (F12)
-
-Se voce mexer no codigo e algo parou de funcionar, abra o
-**F12 > Console** e veja a mensagem. O erro costuma vir com o nome da
-funcao e a linha.
-
+1. Pressione **F12**.
+2. Abra a guia **Console**.
+3. Leia o nome da função e a linha do erro.
